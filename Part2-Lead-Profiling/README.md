@@ -28,6 +28,12 @@ Gmail
 
 Respond to Webhook
 
+## Demo
+
+A complete demonstration of this workflow is available in the repository's main README:
+
+[https://drive.google.com/file/d/XXXXXXXXXXXXXXXX/view](https://drive.google.com/file/d/1_a5zNL087APmZY7JdZvmUhWE88tu6PVv/view?usp=sharing)
+
 ## Features
 
 - Receives visitor information
