@@ -22,14 +22,6 @@ The video demonstrates:
 - Google Sheets
 - Gmail
 
-## Technologies
-
-- n8n
-- Ollama
-- Gemma 3
-- Google Sheets
-- Gmail
-- Claude Code / AI-assisted coding
 
 ## Author
 
