@@ -1,0 +1,372 @@
+{
+  "name": "Lead Profiling Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-profile",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "746ac335-6b80-4ea4-b190-e587c41e4a11",
+      "name": "Webhook",
+      "webhookId": "8fab903b-cc8d-447e-bcb9-e93737a0dfa9"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a3cacb98-400c-496a-826d-83ccebfee99f",
+              "name": "name",
+              "value": "={{$json.body.name}}",
+              "type": "string"
+            },
+            {
+              "id": "fbc64cfe-0600-47e6-8589-ced25dc02273",
+              "name": "email",
+              "value": "={{$json.body.email}}",
+              "type": "string"
+            },
+            {
+              "id": "3857a5f9-6f4e-4993-ac29-8f254794bab7",
+              "name": "message",
+              "value": "={{$json.body.message}}",
+              "type": "string"
+            },
+            {
+              "id": "3096c009-c4e9-42e2-81ba-91f70773238d",
+              "name": "history",
+              "value": "={{$json.body.history}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "543408dd-957a-47c6-af4e-acaf220504c1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Lead Classifier.\n\nA visitor has submitted the following information.\n\nName:\n{{$json.name}}\n\nEmail:\n{{$json.email}}\n\nMessage:\n{{$json.message}}\n\nVisited Pages:\n{{$json.history}}\n\nClassify this lead into ONLY ONE of the following categories.\n\n1. Sales Bots\n\n2. Organizational Development\n\nReturn ONLY the category name.\n\nDo not explain anything.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        416,
+        0
+      ],
+      "id": "16794b18-19d7-4359-acb2-63d12f7c81bf",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "gemma3:latest",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        352,
+        208
+      ],
+      "id": "2667df02-df67-42b3-8a82-fb18c670a758",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "VwfwHxwWLeDLOF4t",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96e5664e-0032-42d0-b220-dee327af49a9",
+              "name": "Name",
+              "value": "={{$('Edit Fields').item.json.name}}",
+              "type": "string"
+            },
+            {
+              "id": "413ea138-1fc7-4273-9411-572ff138250d",
+              "name": "Email",
+              "value": "={{$('Edit Fields').item.json.email}}",
+              "type": "string"
+            },
+            {
+              "id": "aecff663-2dd6-4d45-a898-e6a62e2eec88",
+              "name": "Message",
+              "value": "={{$('Edit Fields').item.json.message}}",
+              "type": "string"
+            },
+            {
+              "id": "2b854352-7416-4fa9-9f25-770e7f5c3109",
+              "name": "Visited Pages",
+              "value": "={{$('Edit Fields').item.json.history}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        0
+      ],
+      "id": "8aca1c7d-a77d-4223-a2d0-855c557e6c05",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Lead processed successfully.\",\n  \"category\": \"{{ $('Basic LLM Chain').item.json.text }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1392,
+        0
+      ],
+      "id": "c3eed5d8-894f-4be4-a5ce-476f818ce66d",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "sendTo": "suvankarparia3@gmail.com",
+        "subject": "New Lead Profile Generated",
+        "message": "A new lead has been classified.  Name: {{$('Edit Fields1').item.json.Name}}  Email: {{$('Edit Fields1').item.json.Email}}  Message: {{$('Edit Fields1').item.json.Message}}  Visited Pages: {{$('Edit Fields1').item.json[\"Visited Pages\"]}}  Category: {{$('Edit Fields1').item.json.Category}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "ea00301b-a6b9-4178-9a1e-0c52add6485d",
+      "name": "Send a message",
+      "webhookId": "92dc06fd-0e6b-4b19-8e2d-48d11abc4d66",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ceaK3W2d2AGlvBNF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Vss348NmuoK_oArAqVOoSIFTYx14kYd2tyPwghhnfrY",
+          "mode": "list",
+          "cachedResultName": "n8n-automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Vss348NmuoK_oArAqVOoSIFTYx14kYd2tyPwghhnfrY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Vss348NmuoK_oArAqVOoSIFTYx14kYd2tyPwghhnfrY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Edit Fields').item.json.name }}",
+            "Company": "=",
+            "Message": "={{ $('Edit Fields').item.json.message }}",
+            "Visited Pages": "={{ $json['Visited Pages'] }}",
+            "Category": "={{ $('Basic LLM Chain').item.json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Visited Pages",
+              "displayName": "Visited Pages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        976,
+        0
+      ],
+      "id": "805ef9ec-4d79-42b8-9d1a-bd1d2044727b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TJo4vaV0LvEKG8ta",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b2a41c10-a9b4-4297-b1c7-b51cce6d0d18",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3637c5dd3bfd8fb4a8e296606fce8d5b630d676a7d11ed7c51c4532da956a511"
+  },
+  "nodeGroups": [],
+  "id": "5CNta7DG5x2sFxZo",
+  "tags": []
+}
