@@ -1,14 +1,26 @@
 # Eubrics Automation Engineer Assignment
 
-This repository contains my solutions for the Eubrics Automation Engineer Assignment.
+## Repository Structure
 
-## Contents
+- Part 1 – Sales Roleplay AI
+- Part 2 – Lead Profiling Automation
 
-### Part 1
-Sales Roleplay Voice Bot built with AI-assisted development.
+## Demo Video
 
-### Part 2
-Lead Profiling Automation Workflow built using n8n, Ollama, Google Sheets and Gmail.
+Google Drive:
+[https://drive.google.com/file/d/XXXXXXXXXXXXXXXX/view](https://drive.google.com/file/d/1_a5zNL087APmZY7JdZvmUhWE88tu6PVv/view?usp=sharing)
+
+The video demonstrates:
+- Part 1: Sales Roleplay AI
+- Part 2: Lead Profiling Automation
+- End-to-end workflow execution
+
+## Technologies
+
+- n8n
+- Ollama (Gemma 3)
+- Google Sheets
+- Gmail
 
 ## Technologies
 
